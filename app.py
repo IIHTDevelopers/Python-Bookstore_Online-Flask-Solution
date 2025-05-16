@@ -53,7 +53,7 @@ def login():
     return render_template("login.html")
 
 
-@app.route('/api/review', methods=['POST'])
+@app.route('/api/reviews', methods=['POST'])
 def post_review():
     review_data = request.get_json()
 
