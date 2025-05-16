@@ -92,32 +92,10 @@ class FunctionalTests(unittest.TestCase):
             self.test_obj.yakshaAssert("TestLoginValidCredentials", False, "functional")
             print(f"TestLoginValidCredentials = Failed | Exception: {e}")
 
-    def test_review_has_required_fields_for_book1(self):
-        try:
-            # Fetch all reviews
-            response = self.client.get('/api/reviews')
-            response_data = response.get_json()
-
-            # Check for at least one review for book_id=1 with required fields
-            review_found = any(
-                isinstance(review, dict) and
-                review.get("book_id") == 1 and
-                all(key in review for key in ["rating", "comment"])
-                for review in response_data
-            )
-
-            self.test_obj.yakshaAssert("TestReviewHasRequiredFieldsForBook1", review_found, "functional")
-            print(
-                "TestReviewHasRequiredFieldsForBook1 = Passed" if review_found else "TestReviewHasRequiredFieldsForBook1 = Failed")
-
-        except Exception as e:
-            self.test_obj.yakshaAssert("TestReviewHasRequiredFieldsForBook1", False, "functional")
-            print(f"TestReviewHasRequiredFieldsForBook1 = Failed | Exception: {e}")
-
     def test_get_reviews(self):
         try:
-            response = self.client.get('/api/reviews')
-            data = response.get_json()
+            response = requests.get("http://127.0.0.1:5000/api/reviews")
+            data = response.json()
 
             # Check status code is 200 OK
             is_status_ok = response.status_code == 200
@@ -140,6 +118,26 @@ class FunctionalTests(unittest.TestCase):
         except Exception as e:
             self.test_obj.yakshaAssert("TestGetReviews", False, "functional")
             print(f"TestGetReviews = Failed | Exception: {e}")
+    def test_review_has_required_fields_for_book1(self):
+        try:
+            # Fetch all reviews from the live endpoint
+            response = requests.get("http://127.0.0.1:5000/api/reviews")
+            response_data = response.json()
+
+            # Check for at least one review for book_id=1 with required fields
+            review_found = any(
+                isinstance(review, dict) and
+                review.get("book_id") == 1 and
+                all(key in review for key in ["rating", "comment"])
+                for review in response_data
+            )
+
+            self.test_obj.yakshaAssert("TestReviewHasRequiredFieldsForBook1", review_found, "functional")
+            print("TestReviewHasRequiredFieldsForBook1 = Passed" if review_found else "TestReviewHasRequiredFieldsForBook1 = Failed")
+
+        except Exception as e:
+            self.test_obj.yakshaAssert("TestReviewHasRequiredFieldsForBook1", False, "functional")
+            print(f"TestReviewHasRequiredFieldsForBook1 = Failed | Exception: {e}")
 
 
 if __name__ == "__main__":
